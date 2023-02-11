@@ -1,10 +1,14 @@
-package com.acceleron.spendly.root;
+package com.acceleron.spendly.server;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-@ComponentScan("com.acceleron.spendly")
+@EntityScan("com.acceleron.spendly.persistence.entity")
+@ComponentScan("com.acceleron.spendly.*")
+@EnableJpaRepositories("com.acceleron.spendly.persistence.dao")
 @SpringBootApplication
 public class SpendlyApplication {
 

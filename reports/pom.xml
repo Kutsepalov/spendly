@@ -12,4 +12,11 @@
 
     <groupId>com.acceleron.spendly</groupId>
     <artifactId>reports</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.acceleron.spendly</groupId>
+            <artifactId>diagrams</artifactId>
+        </dependency>
+    </dependencies>
 </project>
