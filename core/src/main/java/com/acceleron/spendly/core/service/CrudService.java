@@ -1,6 +1,6 @@
 package com.acceleron.spendly.core.service;
 
-public interface CrudSevice<T, I> {
+public interface CrudService<T, I> {
 
     T findById(I id);
     T save(T account);

@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/accounts")
+@RequestMapping("/api/v1/accounts")
 @RequiredArgsConstructor
 public class AccountController {
 
@@ -36,7 +36,7 @@ public class AccountController {
     }
 
     @DeleteMapping("/{id}")
-    public AccountDto updateAccount(@PathVariable UUID id) {
+    public AccountDto deleteAccount(@PathVariable UUID id) {
         return accountService.delete(id);
     }
 }

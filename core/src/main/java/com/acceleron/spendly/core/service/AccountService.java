@@ -5,7 +5,7 @@ import com.acceleron.spendly.core.dto.AccountDto;
 import java.util.List;
 import java.util.UUID;
 
-public interface AccountService extends CrudSevice<AccountDto, UUID> {
+public interface AccountService extends CrudService<AccountDto, UUID> {
 
     List<AccountDto> findAll();
 }

@@ -1,4 +1,4 @@
-package com.acceleron.spendly.controller.dto.auth;
+package com.acceleron.spendly.core.dto.auth;
 
 import com.acceleron.spendly.core.dto.UserDto;
 import lombok.Data;
