@@ -26,9 +26,20 @@ public class User {
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     private UUID id;
+
+    @Column(name = "NAME")
     private String name;
+    @Column(name = "SURNAME")
+    private String surname;
+
+    @Column(name = "DEFAULT_CURRENCY")
+    private String currency;
+
+    @Column(name = "USERNAME")
     private String username;
+    @Column(name = "EMAIL")
     private String email;
+    @Column(name = "PASSWORD")
     private String password;
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @ToString.Exclude

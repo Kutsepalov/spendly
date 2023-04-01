@@ -5,7 +5,7 @@ import com.acceleron.spendly.core.dto.UserDto;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface UserService extends CrudSevice<UserDto, UUID> {
+public interface UserService extends CrudService<UserDto, UUID> {
 
     Optional<UserDto> findByUsernameOrEmail(String usernameOrEmail);
     Optional<UserDto> findByUsername(String username);
