@@ -1,4 +1,4 @@
-package com.acceleron.spendly.core.utils;
+package com.acceleron.spendly.core.util;
 
 public final class UserAuthenticationMatcher {
 

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.acceleron.spendly.core.utils.UserAuthenticationMatcher.isEmail;
+import static com.acceleron.spendly.core.util.UserAuthenticationMatcher.isEmail;
 
 @Service
 @RequiredArgsConstructor
