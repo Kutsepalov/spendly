@@ -1,4 +1,3 @@
-HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
@@ -31,3 +30,9 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Production Configurations ###
+/server/src/main/resources/application-prod.yml
+
+### Test database ###
+/persistence/src/test/resources/database.mv.db
