@@ -5,6 +5,7 @@ import com.acceleron.spendly.core.mapper.AccountMapper;
 import com.acceleron.spendly.core.service.AccountService;
 import com.acceleron.spendly.core.service.AuthenticationService;
 import com.acceleron.spendly.persistence.dao.AccountDao;
+import com.acceleron.spendly.persistence.entity.Account;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.boot.model.naming.IllegalIdentifierException;
 import org.springframework.stereotype.Service;
@@ -42,17 +43,16 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public AccountDto update(AccountDto account) {
-        if (account.getId() == null) {
+    public AccountDto update(AccountDto accountDto) {
+        if (accountDto.getId() == null) {
             throw new IllegalIdentifierException("Account ID is required.");
         }
-        return accountMapper.toAccountDto(
-                accountDao.save(accountMapper.toAccountEntity(account, authenticationService.getCurrentUserId()))
-        );
+        Account account = accountMapper.toAccountEntity(accountDto, authenticationService.getCurrentUserId());
+        return accountMapper.toAccountDto(accountDao.save(account));
     }
 
     @Override
     public AccountDto delete(UUID accountId) {
-        return accountMapper.toAccountDto(accountDao.deleteAccountById(accountId));
+        return accountMapper.toAccountDto(accountDao.deleteAccount(accountId, authenticationService.getCurrentUserId()));
     }
 }

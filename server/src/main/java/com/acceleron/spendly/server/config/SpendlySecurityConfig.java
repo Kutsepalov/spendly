@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
@@ -23,6 +24,7 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 public class SpendlySecurityConfig {
 
     private final UserDetailsService userDetailsService;
+    private final JwtAuthorizationFilter jwtAuthorizationFilter;
 
     @Bean
     @SneakyThrows
@@ -42,9 +44,11 @@ public class SpendlySecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/api/sign-in", "/api/sign-up","/h2-console/**").permitAll()
-                .anyRequest().authenticated()
+                .requestMatchers("/api/v1/auth/login", "/api/v1/auth/registration", "/h2-console/**").permitAll()
+                .anyRequest()
+                .authenticated()
                 .and()
+                .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
                 .httpBasic()
                 .and()
                 .sessionManagement().sessionCreationPolicy(STATELESS);
