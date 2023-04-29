@@ -1,21 +1,24 @@
 package com.acceleron.spendly.persistence.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
 import static com.acceleron.spendly.persistence.entity.Account.TABLE_NAME;
 
+@Table(name = TABLE_NAME)
+@Entity
 @Getter
 @Setter
 @ToString
-@RequiredArgsConstructor
-@Entity
-@Table(name = TABLE_NAME)
 public class Account {
 
     public static final String TABLE_NAME = "ACCOUNTS";
@@ -37,12 +40,22 @@ public class Account {
     private String name;
     @Column(name = "TYPE")
     private String type;
-    @Column(name = "AMOUNT")
-    private BigDecimal amount;
+    @Formula("(SELECT COALESCE((SELECT AH.AMOUNT FROM " + AccountHistory.TABLE_NAME + " AH" +
+            " INNER JOIN " + TABLE_NAME + " A ON AH.ACCOUNT_ID = A.ID WHERE AH.ACCOUNT_ID = id" +
+            " ORDER BY AH.CHANGE_DATETIME DESC LIMIT 1), 0))")
+    private BigDecimal amount = BigDecimal.ZERO;
     @Column(name = "CURRENCY")
     private String currency;
     @Column(name = "COLOR")
     private String color;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, mappedBy = "account")
+    @ToString.Exclude
+    private List<AccountHistory> accountHistories;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, mappedBy = "account")
+    @ToString.Exclude
+    private List<Record> records;
 
     @Override
     public boolean equals(Object o) {

@@ -1,6 +1,6 @@
 package com.acceleron.spendly.core.service.impl;
 
-import com.acceleron.spendly.core.dto.UserDto;
+import com.acceleron.spendly.core.dto.UserDataDto;
 import com.acceleron.spendly.core.dto.auth.AuthenticationRequest;
 import com.acceleron.spendly.core.service.AuthenticationService;
 import com.acceleron.spendly.core.service.UserService;
@@ -11,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -22,18 +23,20 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final JwtUtils jwtUtils;
     private final UserService userService;
+    private final PasswordEncoder passwordEncoder;
     private final UserDetailsService userDetailsService;
     private final AuthenticationManager authenticationManager;
 
     public UUID getCurrentUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
-        return userService.findByUsername(username).map(UserDto::getId)
+        return userService.findByUsername(username).map(UserDataDto::getId)
                 .orElseThrow(() -> new IllegalArgumentException("User with username" + username + "not found"));
     }
 
-    public UUID registerUser(UserDto userDto) {
-        return userService.save(userDto).getId();
+    public UUID registerUser(UserDataDto userDataDto) {
+        userDataDto.setPassword(passwordEncoder.encode(userDataDto.getPassword()));
+        return userService.save(userDataDto).getId();
     }
 
     @Override
