@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/records")
@@ -22,6 +23,11 @@ public class RecordController {
     @GetMapping
     public List<RecordDto> getRecords() {
         return recordService.findAll();
+    }
+
+    @GetMapping("/account/{accountId}")
+    public List<RecordDto> getRecordsByAccount(@PathVariable UUID accountId) {
+        return recordService.findByAccountId(accountId);
     }
 
     @PostMapping

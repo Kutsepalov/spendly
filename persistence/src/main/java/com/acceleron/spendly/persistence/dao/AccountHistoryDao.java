@@ -18,4 +18,6 @@ public interface AccountHistoryDao extends JpaRepository<AccountHistory, Long> {
                   "WHERE AH.ACCOUNT_ID = :accountId " +
                   "ORDER BY AH.CHANGE_DATETIME DESC LIMIT 1), 0)")
     BigDecimal getAccountBalance(UUID accountId);
+
+    void deleteByRecordId(Long id);
 }

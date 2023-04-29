@@ -2,6 +2,7 @@ package com.acceleron.spendly.persistence.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.Formula;
@@ -40,11 +41,13 @@ public class Account {
     private String name;
     @Column(name = "TYPE")
     private String type;
+
     @Formula("(SELECT COALESCE((SELECT AH.AMOUNT FROM " + AccountHistory.TABLE_NAME + " AH" +
             " INNER JOIN " + TABLE_NAME + " A ON AH.ACCOUNT_ID = A.ID WHERE AH.ACCOUNT_ID = id" +
             " ORDER BY AH.CHANGE_DATETIME DESC LIMIT 1), 0))")
     private BigDecimal amount = BigDecimal.ZERO;
-    @Column(name = "CURRENCY")
+    @Column(name = "CURRENCY", nullable = false)
+    @NonNull
     private String currency;
     @Column(name = "COLOR")
     private String color;

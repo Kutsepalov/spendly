@@ -1,8 +1,8 @@
 package com.acceleron.spendly.persistence.entity;
 
-import com.acceleron.spendly.persistence.entity.enums.RecordType;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -43,12 +43,13 @@ public class Record {
     @Column(name = "PAYEE")
     private String payee;
     @Column(name = "TYPE")
-    @Enumerated(EnumType.STRING)
-    private RecordType type;
+    private String type;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "CATEGORY_ID", insertable = false, updatable = false, nullable = false)
     private Category category;
+    @Column(name = "CATEGORY_ID")
+    private UUID categoryId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="ACCOUNT_ID", referencedColumnName = "ID", insertable = false, updatable = false, nullable = false)
@@ -68,6 +69,7 @@ public class Record {
     @JoinColumn(name="USER_ID", referencedColumnName = "ID", insertable = false, updatable = false, nullable = false)
     @ToString.Exclude
     private User user;
+    @NonNull
     @Column(name = "USER_ID")
     private UUID userId;
 
@@ -75,7 +77,7 @@ public class Record {
     @Temporal(TemporalType.TIMESTAMP)
     private Timestamp creationDatetime;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, mappedBy = "recordEntity")
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "recordEntity")
     @ToString.Exclude
     private List<AccountHistory> accountHistories;
 
@@ -109,7 +111,7 @@ public class Record {
         if (!Objects.equals(payee, recordEntity.payee)) {
             return false;
         }
-        if (type != recordEntity.type) {
+        if (!Objects.equals(type, recordEntity.type)) {
             return false;
         }
         if (!category.equals(recordEntity.category)) {
