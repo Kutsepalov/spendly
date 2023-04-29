@@ -12,11 +12,19 @@ import java.util.UUID;
 @Repository
 public interface RecordDao extends JpaRepository<Record, Long> {
 
-    List<Record> findByUserId(UUID id);
+    @Query(nativeQuery = true,
+            value = "SELECT * FROM RECORDS " +
+                    "WHERE RECORDS.USER_ID = :userId")
+    List<Record> findAll(UUID userId);
 
     @Query(nativeQuery = true,
             value = "DELETE FROM RECORDS " +
-                    "WHERE RECORDS.ID = :id AND RECORDS.USER_ID = :userId ")
+                    "WHERE RECORDS.ID = :id AND RECORDS.USER_ID = :userId")
     @Modifying
-    Record deleteRecord(Long id, UUID userId);
+    void deleteRecord(Long id, UUID userId);
+
+    @Query(nativeQuery = true,
+            value = "SELECT * FROM RECORDS " +
+                    "WHERE RECORDS.ACCOUNT_ID = :accountId AND RECORDS.USER_ID = :userId")
+    List<Record> findByAccountId(UUID accountId, UUID userId);
 }
