@@ -1,21 +1,25 @@
 package com.acceleron.spendly.core.dto.auth;
 
-import com.acceleron.spendly.core.dto.UserDto;
+import com.acceleron.spendly.core.dto.UserDataDto;
 import lombok.Data;
 
 @Data
 public class RegistrationRequest {
 
     private String name;
-    private String username;
+    private String surname;
+    private String currency;
     private String email;
+    private String username;
     private String password;
 
-    public UserDto mapToUserDto() {
-        return UserDto.builder()
+    public UserDataDto mapToUserDto() {
+        return UserDataDto.builder()
                 .name(name)
-                .username(username)
+                .surname(surname)
+                .currency(currency)
                 .email(email)
+                .username(username)
                 .password(password)
                 .build();
     }

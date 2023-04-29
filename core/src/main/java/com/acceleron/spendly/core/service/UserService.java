@@ -1,12 +1,13 @@
 package com.acceleron.spendly.core.service;
 
-import com.acceleron.spendly.core.dto.UserDto;
+import com.acceleron.spendly.core.dto.UserDataDto;
 
 import java.util.Optional;
 import java.util.UUID;
 
-public interface UserService extends CrudService<UserDto, UUID> {
+public interface UserService extends CrudService<UserDataDto, UUID> {
 
-    Optional<UserDto> findByUsernameOrEmail(String usernameOrEmail);
-    Optional<UserDto> findByUsername(String username);
+    Optional<UserDataDto> getCurrentUser();
+    Optional<UserDataDto> findByUsernameOrEmail(String usernameOrEmail);
+    Optional<UserDataDto> findByUsername(String username);
 }

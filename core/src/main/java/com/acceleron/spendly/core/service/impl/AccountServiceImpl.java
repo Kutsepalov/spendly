@@ -5,11 +5,16 @@ import com.acceleron.spendly.core.mapper.AccountMapper;
 import com.acceleron.spendly.core.service.AccountService;
 import com.acceleron.spendly.core.service.AuthenticationService;
 import com.acceleron.spendly.persistence.dao.AccountDao;
+import com.acceleron.spendly.persistence.dao.AccountHistoryDao;
 import com.acceleron.spendly.persistence.entity.Account;
+import com.acceleron.spendly.persistence.entity.AccountHistory;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.boot.model.naming.IllegalIdentifierException;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,6 +23,8 @@ import java.util.UUID;
 public class AccountServiceImpl implements AccountService {
 
     private final AccountDao accountDao;
+    private final AccountHistoryDao accountHistoryDao;
+
     private final AccountMapper accountMapper;
     private final AuthenticationService authenticationService;
 
@@ -37,9 +44,10 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public AccountDto save(AccountDto account) {
-        return accountMapper.toAccountDto(
-                accountDao.save(accountMapper.toAccountEntity(account, authenticationService.getCurrentUserId()))
-        );
+        AccountDto accountDto = accountMapper.toAccountDto(
+                accountDao.save(accountMapper.toAccountEntity(account, authenticationService.getCurrentUserId())));
+        saveAccountBalanceChange(accountDto);
+        return accountDto;
     }
 
     @Override
@@ -54,5 +62,14 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public AccountDto delete(UUID accountId) {
         return accountMapper.toAccountDto(accountDao.deleteAccount(accountId, authenticationService.getCurrentUserId()));
+    }
+
+    private void saveAccountBalanceChange(AccountDto accountDto) {
+        AccountHistory accountHistory = AccountHistory.builder()
+                .accountId(accountDto.getId())
+                .balance(accountDto.getAmount())
+                .changeDatetime(Timestamp.from(OffsetDateTime.now(ZoneOffset.UTC).toInstant()))
+                .build();
+        accountHistoryDao.save(accountHistory);
     }
 }
