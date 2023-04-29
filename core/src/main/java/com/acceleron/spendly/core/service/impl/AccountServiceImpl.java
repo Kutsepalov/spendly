@@ -8,6 +8,7 @@ import com.acceleron.spendly.persistence.dao.AccountDao;
 import com.acceleron.spendly.persistence.dao.AccountHistoryDao;
 import com.acceleron.spendly.persistence.entity.Account;
 import com.acceleron.spendly.persistence.entity.AccountHistory;
+import com.acceleron.spendly.persistence.entity.enums.CurrencyCode;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.boot.model.naming.IllegalIdentifierException;
 import org.springframework.stereotype.Service;
@@ -40,6 +41,11 @@ public class AccountServiceImpl implements AccountService {
         return accountDao.findByUserId(authenticationService.getCurrentUserId())
                 .stream()
                 .map(accountMapper::toAccountDto).toList();
+    }
+
+    @Override
+    public CurrencyCode getCurrency(UUID accountId) {
+        return accountDao.getCurrency(accountId, authenticationService.getCurrentUserId());
     }
 
     @Override

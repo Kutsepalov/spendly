@@ -1,30 +1,30 @@
 package com.acceleron.spendly.core.service.impl;
 
 import com.acceleron.spendly.core.dto.RecordDto;
+import com.acceleron.spendly.core.enricher.RecordDtoEnricher;
 import com.acceleron.spendly.core.mapper.RecordMapper;
 import com.acceleron.spendly.core.service.AuthenticationService;
 import com.acceleron.spendly.core.service.RecordService;
-import com.acceleron.spendly.persistence.dao.AccountHistoryDao;
 import com.acceleron.spendly.persistence.dao.RecordDao;
-import com.acceleron.spendly.persistence.entity.AccountHistory;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.boot.model.naming.IllegalIdentifierException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Timestamp;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.List;
+import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class RecordServiceImpl implements RecordService {
 
     private final RecordDao recordDao;
-    private final AccountHistoryDao accountHistoryDao;
-
     private final RecordMapper recordMapper;
+    private final RecordDtoEnricher recordDtoEnricher;
     private final AuthenticationService authenticationService;
+    private final AccountUpdateServiceImpl accountUpdateService;
 
     @Override
     public RecordDto findById(Long id) {
@@ -35,73 +35,48 @@ public class RecordServiceImpl implements RecordService {
 
     @Override
     public List<RecordDto> findAll() {
-        return recordDao.findByUserId(authenticationService.getCurrentUserId())
+        return recordDao.findAll(authenticationService.getCurrentUserId())
+                .stream()
+                .map(recordMapper::toRecordDto).toList();
+    }
+
+    @Override
+    public List<RecordDto> findByAccountId(UUID accountId) {
+        return recordDao.findByAccountId(accountId, authenticationService.getCurrentUserId())
                 .stream()
                 .map(recordMapper::toRecordDto).toList();
     }
 
     @Override
     public RecordDto save(RecordDto recordDto) {
+        recordDtoEnricher.enrich(recordDto);
+
         recordDto = recordMapper.toRecordDto(
                 recordDao.save(recordMapper.toRecordEntity(recordDto, authenticationService.getCurrentUserId())));
-        saveAccountBalanceChange(recordDto);
+        log.debug("Record saved: {}", recordDto);
+
+        accountUpdateService.changeAccountBalance(recordDto);
         return recordDto;
     }
 
     @Override
     public RecordDto update(RecordDto recordDto) {
+        recordDtoEnricher.enrich(recordDto);
         if (recordDto.getId() == null) {
             throw new IllegalIdentifierException("Record ID is required.");
         }
-        return recordMapper.toRecordDto(
+        recordDto = recordMapper.toRecordDto(
                 recordDao.save(recordMapper.toRecordEntity(recordDto, authenticationService.getCurrentUserId())));
+        log.debug("Record updated: {}", recordDto);
+        return recordDto;
     }
 
     @Override
+    @Transactional
     public RecordDto delete(Long id) {
-        return recordMapper.toRecordDto(
-                recordDao.deleteRecord(id, authenticationService.getCurrentUserId()));
-    }
-
-    private void saveAccountBalanceChange(RecordDto recordDto) {
-        switch (recordDto.getType()) {
-            case INCOME -> applyIncome(recordDto);
-            case EXPENSE -> applyExpense(recordDto);
-            case TRANSFER -> applyTransfer(recordDto);
-            default -> throw new IllegalArgumentException("Unknown record type: " + recordDto.getType());
-        }
-    }
-
-    private void applyIncome(RecordDto recordDto) {
-        AccountHistory accountHistory = AccountHistory.builder()
-                .accountId(recordDto.getAccountId())
-                .balance(accountHistoryDao.getAccountBalance(recordDto.getAccountId()).add(recordDto.getAmount()))
-                .changeDatetime(Timestamp.from(OffsetDateTime.now(ZoneOffset.UTC).toInstant()))
-                .build();
-        accountHistoryDao.save(accountHistory);
-    }
-
-    private void applyExpense(RecordDto recordDto) {
-        AccountHistory accountHistory = AccountHistory.builder()
-                .accountId(recordDto.getAccountId())
-                .balance(accountHistoryDao.getAccountBalance(recordDto.getAccountId()).subtract(recordDto.getAmount()))
-                .changeDatetime(Timestamp.from(OffsetDateTime.now(ZoneOffset.UTC).toInstant()))
-                .build();
-        accountHistoryDao.save(accountHistory);
-    }
-
-    private void applyTransfer(RecordDto recordDto) {
-        AccountHistory accountHistory = AccountHistory.builder()
-                .accountId(recordDto.getAccountId())
-                .balance(accountHistoryDao.getAccountBalance(recordDto.getAccountId()).subtract(recordDto.getAmount()))
-                .changeDatetime(Timestamp.from(OffsetDateTime.now(ZoneOffset.UTC).toInstant()))
-                .build();
-        AccountHistory targetAccountHistory = AccountHistory.builder()
-                .accountId(recordDto.getTargetAccountId())
-                .balance(accountHistoryDao.getAccountBalance(recordDto.getTargetAccountId()).add(recordDto.getAmount()))
-                .changeDatetime(Timestamp.from(OffsetDateTime.now(ZoneOffset.UTC).toInstant()))
-                .build();
-        accountHistoryDao.save(accountHistory);
-        accountHistoryDao.save(targetAccountHistory);
+        RecordDto deletedRecordDto = findById(id);
+        accountUpdateService.deleteChangings(deletedRecordDto);
+        recordDao.deleteRecord(id, authenticationService.getCurrentUserId());
+        return deletedRecordDto;
     }
 }

@@ -16,3 +16,6 @@ spendly:
       expiration-time: 24000000
 server:
   port: 8000
+logging:
+  level:
+    com.acceleron.spendly: DEBUG

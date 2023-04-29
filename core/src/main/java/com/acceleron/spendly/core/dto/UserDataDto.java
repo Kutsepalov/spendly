@@ -1,5 +1,6 @@
 package com.acceleron.spendly.core.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -15,6 +16,8 @@ import java.util.UUID;
 @AllArgsConstructor
 public class UserDataDto extends UserDto {
 
+    @JsonIgnore
     private UUID id;
+    @JsonIgnore
     private String password;
 }
