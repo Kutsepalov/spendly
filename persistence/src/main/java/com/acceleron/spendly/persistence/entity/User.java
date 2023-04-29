@@ -1,7 +1,10 @@
 package com.acceleron.spendly.persistence.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.util.List;
@@ -42,8 +45,17 @@ public class User {
     @Column(name = "PASSWORD")
     private String password;
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "USER_ID")
     @ToString.Exclude
     private List<Account> accounts;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, mappedBy = "user")
+    @ToString.Exclude
+    private List<Category> categories;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, mappedBy = "user")
+    @ToString.Exclude
+    private List<Record> records;
 
     @Override
     public boolean equals(Object o) {

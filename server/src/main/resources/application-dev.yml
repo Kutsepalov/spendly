@@ -14,3 +14,5 @@ spendly:
     jwt:
       secret-code: secretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecret
       expiration-time: 24000000
+server:
+  port: 8000

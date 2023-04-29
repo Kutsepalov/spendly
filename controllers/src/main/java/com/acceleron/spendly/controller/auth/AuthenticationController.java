@@ -10,8 +10,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.UUID;
-
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
@@ -26,7 +24,7 @@ public class AuthenticationController {
 
     @PostMapping("/registration")
     public ResponseEntity<String> registerUser(@RequestBody RegistrationRequest request) {
-        UUID userId = authenticationService.registerUser(request.mapToUserDto());
-        return ResponseEntity.ok("User registered successfully: " + userId);
+        return ResponseEntity.ok("User registered successfully: " +
+                authenticationService.registerUser(request.mapToUserDto()));
     }
 }
