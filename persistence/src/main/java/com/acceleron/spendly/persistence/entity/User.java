@@ -8,6 +8,7 @@ import lombok.ToString;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import static com.acceleron.spendly.persistence.entity.User.TABLE_NAME;
@@ -26,6 +27,7 @@ public class User {
     public static final String TABLE_NAME = "USERS";
 
     @Id
+    @Column(name = "ID")
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     private UUID id;
@@ -56,6 +58,18 @@ public class User {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, mappedBy = "user")
     @ToString.Exclude
     private List<Record> records;
+
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "participants")
+    @ToString.Exclude
+    private Set<UserGroup> groups;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, mappedBy = "sender")
+    @ToString.Exclude
+    private List<Notification> sentNotifications;
+
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE, mappedBy = "receiver")
+    @ToString.Exclude
+    private List<Notification> receivedNotifications;
 
     @Override
     public boolean equals(Object o) {
