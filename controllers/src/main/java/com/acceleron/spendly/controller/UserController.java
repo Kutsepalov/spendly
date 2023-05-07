@@ -1,4 +1,4 @@
-package com.acceleron.spendly.controller.user;
+package com.acceleron.spendly.controller;
 
 import com.acceleron.spendly.core.dto.UserDto;
 import com.acceleron.spendly.core.service.UserService;

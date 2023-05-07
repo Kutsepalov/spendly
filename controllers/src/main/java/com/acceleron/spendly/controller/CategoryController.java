@@ -1,4 +1,4 @@
-package com.acceleron.spendly.controller.category;
+package com.acceleron.spendly.controller;
 
 import com.acceleron.spendly.core.dto.CategoryDto;
 import com.acceleron.spendly.core.service.CategoryService;

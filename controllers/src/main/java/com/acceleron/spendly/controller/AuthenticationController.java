@@ -1,4 +1,4 @@
-package com.acceleron.spendly.controller.auth;
+package com.acceleron.spendly.controller;
 
 import com.acceleron.spendly.core.dto.auth.AuthenticationRequest;
 import com.acceleron.spendly.core.dto.auth.RegistrationRequest;
